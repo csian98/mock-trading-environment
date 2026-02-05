@@ -26,12 +26,12 @@ class StockMarket(Market):
     def __init__(self, symbols: List):
         super().__init__(symbols)
 
-    def history(self) -> dict:
+    def history(self, period: str="3y", days: int=30) -> dict:
         output = {}
         for symbol in self._symbols:
             ticker = yf.Ticker(symbol)
-            df = ticker.history(period="3y")["Close"]
-            idx = df.index < (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S%z")
+            df = ticker.history(period=period)["Close"]
+            idx = df.index < (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S%z")
             output[symbol] = df[idx].values
             self._queue[symbol] = deque(df[~idx])
 

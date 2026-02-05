@@ -26,6 +26,9 @@ from model import Model
 
 # Data Structures define - class #
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = '3'
+tf.get_logger().setLevel("ERROR")
+
 class LSTMModel(Model):
     def __init__(self, window_size: int):
         super().__init__("lstm")
@@ -47,7 +50,7 @@ class LSTMModel(Model):
         self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-2),
                            loss="mean_squared_error")
 
-    def fit(self, X, y, batch_size=64, epochs=5) -> None:
+    def fit(self, X, y, batch_size=64, epochs=10) -> None:
         ssz, wsz, fsz = X.shape
         X = X.reshape(ssz * wsz, fsz)
         X = self.scaler.fit_transform(X)
@@ -56,13 +59,13 @@ class LSTMModel(Model):
         y = y.reshape(ssz, fsz)
         y = self.scaler.transform(y)
         
-        self.model.fit(X, y, batch_size=batch_size, epochs=epochs)
+        self.model.fit(X, y, batch_size=batch_size, epochs=epochs, verbose=0)
 
     def predict(self, X) -> float:
         X = X.reshape(self.window_size, 1)
         X = self.scaler.transform(X)
         X = X.reshape(1, self.window_size, 1)
-        y = self.model.predict(X)
+        y = self.model.predict(X, verbose=0)
         return self.scaler.inverse_transform(y)
 
     def predict_multiple(self, X, count=3) -> List:

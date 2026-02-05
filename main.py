@@ -27,7 +27,7 @@ def main(*args, **kwargs):
     while not trader.empty():
         day += 1
         balance = trader.balance()
-        print(f"Day: {day}, Balance: {balance:.2f}")
+        trader.report(day)
         trader.trade()
         trader.next()
         

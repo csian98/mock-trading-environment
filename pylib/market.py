@@ -25,7 +25,7 @@ class Market(ABC):
         self._queue = {}
 
     @abstractmethod
-    def history(self) -> dict:
+    def history(self, period:str="3y", days: int=30) -> dict:
         pass
 
     @abstractmethod
