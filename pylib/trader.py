@@ -38,7 +38,7 @@ class Trader:
         self.windows = {}
         self.counts = {symbol:0 for symbol in self.symbols}
         
-        history = self.market.history(period="5y", days=60)
+        history = self.market.history(period="2y", days=45)
         
         for symbol in self.symbols:
             X, y = window_indexing(history[symbol],
@@ -48,7 +48,7 @@ class Trader:
             self.windows[symbol] = X[-1]
             
             X = X.reshape(X.shape + (1, ))
-            self.models[symbol].fit(X, y, batch_size=64, epochs=10)
+            self.models[symbol].fit(X, y, batch_size=64, epochs=50)
     
     def trade(self):
         scores = {}
@@ -66,7 +66,7 @@ class Trader:
                 self.cash += value * (1 - self.charge)
                 self.counts[symbol] = 0
             elif count != 0:
-                scores[symbol] *= 1.2	# conservation
+                scores[symbol] *= 1.01	# conservation
         
         candidate = []
         score_sum = 0.0
@@ -77,7 +77,7 @@ class Trader:
         
         if abs(score_sum - 0.0) < 1e-5:
             return
-                
+        
         candidate = sorted(candidate, reverse=True, key=lambda x: x[1])
         balance = self.cash
         for symbol, _ in candidate:
