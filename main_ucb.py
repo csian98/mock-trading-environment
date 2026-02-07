@@ -14,7 +14,7 @@ __version__ = "1.0.0"
 import os, sys
 
 sys.path.append("pylib/")
-
+import numpy as np
 from trader_ucb import Trader
 
 # Main function define #
@@ -25,13 +25,20 @@ def main(*args, **kwargs):
     day = 0
 
     trader = Trader(cash)
+    balances = []
 
     while not trader.empty():
         day += 1
-        balance = trader.balance()
+        balances.append(trader.balance())
         trader.report(day)
         trader.trade(day)
         trader.next()
+
+    print(f"Final Balance: ${trader.balance():.2f}")
+    print(f"Total Return: {(trader.balance() - cash) / cash * 100:.2f}%")
+    print(
+        f"Sharpe Ratio: {(np.mean(np.diff(balances)) / np.std(np.diff(balances))):.2f}"
+    )
 
 
 # EP
